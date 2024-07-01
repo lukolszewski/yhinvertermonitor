@@ -3,6 +3,8 @@ mqtt:
   port: 1883
 
 logpath: /home/userone/dev/modbus/logfile.log
+push_unknown_registers: 'yes'
+mqtt_prefix: 'solar/easuninverter'
 serial:
   device: "/dev/ttyAMA1"
   baudrate: 2400
@@ -11,44 +13,44 @@ serial:
   mode: "rtu"
 
 registers:
-  - {id: 4501, topic: 'solar/inverter/output_source_priority', transform: 'divide', argument: 1, unit: 'index', rounding: 0}
-  - {id: 4502, topic: 'solar/inverter/ac_voltage', transform: 'divide', argument: 10, unit: 'V', rounding: 1}
-  - {id: 4503, topic: 'solar/inverter/ac_frequency', transform: 'divide', argument: 10, unit: 'Hz', rounding: 2}
-  - {id: 4504, topic: 'solar/inverter/pv_voltage', transform: 'divide', argument: 10, unit: 'V', rounding: 2}
-  - {id: 4505, topic: 'solar/inverter/charging', transform: 'divide', argument: 1, unit: '', rounding: 0}
-  - {id: 4506, topic: 'solar/inverter/battery_voltage', transform: 'divide', argument: 10, unit: 'V', rounding: 2}
-  - {id: 4507, topic: 'solar/inverter/battery_soc', transform: 'divide', argument: 1, unit: '%', rounding: 2}
-  - {id: 4508, topic: 'solar/inverter/battery_charge_current', transform: 'divide', argument: 10, unit: 'A', rounding: 2}
-  - {id: 4509, topic: 'solar/inverter/battery_discharge_current', transform: 'divide', argument: 10, unit: 'A', rounding: 2}
-  - {id: 4510, topic: 'solar/inverter/load_voltage', transform: 'divide', argument: 10, unit: 'V', rounding: 2}
-  - {id: 4511, topic: 'solar/inverter/load_frequency', transform: 'divide', argument: 10, unit: 'Hz', rounding: 2}
-  - {id: 4512, topic: 'solar/inverter/load_power', transform: 'divide', argument: 10, unit: 'W', rounding: 0}
-  - {id: 4513, topic: 'solar/inverter/load_va', transform: 'divide', argument: 10, unit: 'VA', rounding: 0}
-  - {id: 4514, topic: 'solar/inverter/load_percent', transform: 'divide', argument: 1, unit: '%', rounding: 2}
-  - {id: 4515, topic: 'solar/inverter/load_percent', transform: 'divide', argument: 1, unit: '%', rounding: 2}
+  - {id: 4501, topic: 'output_source_priority', transform: 'divide', argument: 1, unit: 'index', rounding: 0}
+  - {id: 4502, topic: 'ac_voltage', transform: 'divide', argument: 10, unit: 'V', rounding: 1}
+  - {id: 4503, topic: 'ac_frequency', transform: 'divide', argument: 10, unit: 'Hz', rounding: 2}
+  - {id: 4504, topic: 'pv_voltage', transform: 'divide', argument: 10, unit: 'V', rounding: 2}
+  - {id: 4505, topic: 'charging', transform: 'divide', argument: 1, unit: '', rounding: 0}
+  - {id: 4506, topic: 'battery_voltage', transform: 'divide', argument: 10, unit: 'V', rounding: 2}
+  - {id: 4507, topic: 'battery_soc', transform: 'divide', argument: 1, unit: '%', rounding: 2}
+  - {id: 4508, topic: 'battery_charge_current', transform: 'divide', argument: 10, unit: 'A', rounding: 2}
+  - {id: 4509, topic: 'battery_discharge_current', transform: 'divide', argument: 10, unit: 'A', rounding: 2}
+  - {id: 4510, topic: 'load_voltage', transform: 'divide', argument: 10, unit: 'V', rounding: 2}
+  - {id: 4511, topic: 'load_frequency', transform: 'divide', argument: 10, unit: 'Hz', rounding: 2}
+  - {id: 4512, topic: 'load_power', transform: 'divide', argument: 10, unit: 'W', rounding: 0}
+  - {id: 4513, topic: 'load_va', transform: 'divide', argument: 10, unit: 'VA', rounding: 0}
+  - {id: 4514, topic: 'load_percent', transform: 'divide', argument: 1, unit: '%', rounding: 2}
+  - {id: 4515, topic: 'load_percent', transform: 'divide', argument: 1, unit: '%', rounding: 2}
   - {id: 4516, topic: 'register4516', transform: 'divide', argument: 1, unit: '', rounding: 0}
-  - {id: 4530, topic: 'solar/inverter/error_code', transform: 'divide', argument: 1, unit: '', rounding: 0}
+  - {id: 4530, topic: 'error_code', transform: 'divide', argument: 1, unit: '', rounding: 0}
   - {id: 4535, topic: 'register4535', transform: 'divide', argument: 1, unit: '', rounding: 0}
-  - {id: 4536, topic: 'solar/inverter/charger_source_priority', transform: 'divide', argument: 1, unit: '', rounding: 0}
-  - {id: 4537, topic: 'solar/inverter/output_source_priority_correct', transform: 'divide', argument: 1, unit: '', rounding: 0}
-  - {id: 4538, topic: 'solar/inverter/ac_input_voltage_range', transform: 'divide', argument: 1, unit: '', rounding: 0}
-  - {id: 4540, topic: 'solar/inverter/target_output_frequency', transform: 'divide', argument: 10, unit: 'Hz', rounding: 2}
-  - {id: 4541, topic: 'solar/inverter/max_total_charging_current', transform: 'divide', argument: 1, unit: 'A', rounding: 0}
-  - {id: 4542, topic: 'solar/inverter/target_output_voltage', transform: 'divide', argument: 10, unit: 'V', rounding: 2}
-  - {id: 4543, topic: 'solar/inverter/max_utility_charging_current', transform: 'divide', argument: 1, unit: 'A', rounding: 0}
-  - {id: 4544, topic: 'solar/inverter/back_to_utility_source_voltage', transform: 'divide', argument: 10, unit: 'V', rounding: 2}
-  - {id: 4545, topic: 'solar/inverter/back_to_battery_source_voltage', transform: 'divide', argument: 10, unit: 'V', rounding: 2}
-  - {id: 4546, topic: 'solar/inverter/bulk_charging_voltage', transform: 'divide', argument: 10, unit: 'V', rounding: 2}
-  - {id: 4547, topic: 'solar/inverter/floating_charging_voltage', transform: 'divide', argument: 10, unit: 'V', rounding: 2}
-  - {id: 4548, topic: 'solar/inverter/low_cutoff_voltage', transform: 'divide', argument: 10, unit: 'V', rounding: 2}
-  - {id: 4549, topic: 'solar/inverter/battery_equalization_voltage', transform: 'divide', argument: 10, unit: 'V', rounding: 2}
-  - {id: 4550, topic: 'solar/inverter/battery_equalized_time', transform: 'divide', argument: 1, unit: 'minutes', rounding: 0}
-  - {id: 4551, topic: 'solar/inverter/battery_equalized_timeout', transform: 'divide', argument: 1, unit: 'minutes', rounding: 0}
-  - {id: 4552, topic: 'solar/inverter/equalization_interval', transform: 'divide', argument: 1, unit: 'days', rounding: 0}
+  - {id: 4536, topic: 'charger_source_priority', transform: 'divide', argument: 1, unit: '', rounding: 0}
+  - {id: 4537, topic: 'output_source_priority_correct', transform: 'divide', argument: 1, unit: '', rounding: 0}
+  - {id: 4538, topic: 'ac_input_voltage_range', transform: 'divide', argument: 1, unit: '', rounding: 0}
+  - {id: 4540, topic: 'target_output_frequency', transform: 'divide', argument: 10, unit: 'Hz', rounding: 2}
+  - {id: 4541, topic: 'max_total_charging_current', transform: 'divide', argument: 1, unit: 'A', rounding: 0}
+  - {id: 4542, topic: 'target_output_voltage', transform: 'divide', argument: 10, unit: 'V', rounding: 2}
+  - {id: 4543, topic: 'max_utility_charging_current', transform: 'divide', argument: 1, unit: 'A', rounding: 0}
+  - {id: 4544, topic: 'back_to_utility_source_voltage', transform: 'divide', argument: 10, unit: 'V', rounding: 2}
+  - {id: 4545, topic: 'back_to_battery_source_voltage', transform: 'divide', argument: 10, unit: 'V', rounding: 2}
+  - {id: 4546, topic: 'bulk_charging_voltage', transform: 'divide', argument: 10, unit: 'V', rounding: 2}
+  - {id: 4547, topic: 'floating_charging_voltage', transform: 'divide', argument: 10, unit: 'V', rounding: 2}
+  - {id: 4548, topic: 'low_cutoff_voltage', transform: 'divide', argument: 10, unit: 'V', rounding: 2}
+  - {id: 4549, topic: 'battery_equalization_voltage', transform: 'divide', argument: 10, unit: 'V', rounding: 2}
+  - {id: 4550, topic: 'battery_equalized_time', transform: 'divide', argument: 1, unit: 'minutes', rounding: 0}
+  - {id: 4551, topic: 'battery_equalized_timeout', transform: 'divide', argument: 1, unit: 'minutes', rounding: 0}
+  - {id: 4552, topic: 'equalization_interval', transform: 'divide', argument: 1, unit: 'days', rounding: 0}
   - {id: 4553, topic: 'register4553', transform: 'divide', argument: 1, unit: '', rounding: 0}
   - {id: 4554, topic: 'register4554', transform: 'divide', argument: 1, unit: '', rounding: 0}
-  - {id: 4555, topic: 'solar/inverter/charger_status', transform: 'divide', argument: 1, unit: 'status', rounding: 0}
-  - {id: 4557, topic: 'solar/inverter/temperature_sensor', transform: 'divide', argument: 1, unit: 'C', rounding: 1}
+  - {id: 4555, topic: 'charger_status', transform: 'divide', argument: 1, unit: 'status', rounding: 0}
+  - {id: 4557, topic: 'temperature_sensor', transform: 'divide', argument: 1, unit: 'C', rounding: 1}
 
 read:
   start_register: 4501

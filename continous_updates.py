@@ -96,6 +96,10 @@ def perform_task():
         values = instrument.read_registers(start_register, number_of_registers)
         values = swap_list_bytes(values)
 
+        mqtt_prefix=config.get('mqtt_prefix','')
+        if mqtt_prefix:
+            mqtt_prefix = mqtt_prefix+'/'
+
         # Collect all messages to publish
         msgs = []
         for register in range(start_register, start_register + number_of_registers):
@@ -106,7 +110,7 @@ def perform_task():
                 transformed_value = transform_function(value, reg_info['argument'])
                 rounded_value = round(transformed_value, reg_info['rounding'])
                 message = {
-                    'topic': reg_info['topic'],
+                    'topic': mqtt_prefix+reg_info['topic'],
                     'payload': f"{rounded_value} {reg_info['unit']}"
                 }
                 msgs.append(message)
