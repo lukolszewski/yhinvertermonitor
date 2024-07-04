@@ -112,7 +112,7 @@ def perform_task():
                 rounded_value = round(transformed_value, reg_info['rounding'])
                 message = {
                     'topic': mqtt_prefix+reg_info['topic'],
-                    'payload': f"{rounded_value} {reg_info['unit']}"
+                    'payload': f"{rounded_value}"
                 }
                 msgs.append(message)
             elif config.get('push_unknown_registers','no') == 'yes':
@@ -121,7 +121,7 @@ def perform_task():
                 rounded_value = round(transformed_value, config.get('default_rounding',0))
                 message = {
                     'topic': mqtt_prefix+"register"+str(register),
-                    'payload': f"{rounded_value} {config.get('default_unit',0)}"
+                    'payload': f"{rounded_value}"
                 }
                 msgs.append(message)
 
