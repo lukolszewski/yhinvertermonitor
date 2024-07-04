@@ -1,0 +1,4 @@
+minimalmodbus
+paho-mqtt
+pyserial
+PyYAML
