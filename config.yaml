@@ -4,7 +4,11 @@ mqtt:
 
 logpath: /home/userone/dev/modbus/logfile.log
 push_unknown_registers: 'yes'
-mqtt_prefix: 'solar/easuninverter'
+default_transform: 'divide'
+default_argument: 1
+default_unit: 'NA'
+default_rounding: 0
+mqtt_prefix: 'solar/yhinverter'
 serial:
   device: "/dev/ttyAMA1"
   baudrate: 2400

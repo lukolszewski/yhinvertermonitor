@@ -7,6 +7,7 @@ import logging
 import logging.handlers
 import threading
 import os
+import traceback
 
 # Initialize global variables and locks
 lock = threading.Lock()
@@ -37,7 +38,7 @@ def setup_logging():
 
     # Set up a logger
     logger = logging.getLogger(__name__)
-    logger.setLevel(logging.DEBUG)
+    logger.setLevel(logging.WARNING)
 
     # Create handlers
     c_handler = logging.StreamHandler()
@@ -114,12 +115,23 @@ def perform_task():
                     'payload': f"{rounded_value} {reg_info['unit']}"
                 }
                 msgs.append(message)
+            elif config.get('push_unknown_registers','no') == 'yes':
+                transform_function = globals()[config.get('default_transform','divide')]
+                transformed_value = transform_function(value, config.get('default_argument',1))
+                rounded_value = round(transformed_value, config.get('default_rounding',0))
+                message = {
+                    'topic': mqtt_prefix+"register"+str(register),
+                    'payload': f"{rounded_value} {config.get('default_unit',0)}"
+                }
+                msgs.append(message)
 
         # Publish all messages in one call
         publish.multiple(msgs, hostname=mqtt_broker, port=mqtt_port, protocol=MQTTProtocolVersion.MQTTv5)
         logger.info("All messages published successfully.")
     except Exception as e:
         logger.error(f"Failed to read from device or process data: {e}")
+        logger.error("Exception occurred", exc_info=True)
+        logger.error(traceback.format_exc())
 
 def task_runner():
     while not shutdown_event.is_set():
