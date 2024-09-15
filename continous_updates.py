@@ -172,6 +172,7 @@ def perform_task():
             msgs.append(read_register(rs))
 
         # Publish all messages in one call
+        print(msgs)
         publish.multiple(msgs, hostname=mqtt_broker, port=mqtt_port, protocol=MQTTProtocolVersion.MQTTv5)
         logger.info("All messages published successfully.")
     except Exception as e:
