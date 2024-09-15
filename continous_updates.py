@@ -1,5 +1,6 @@
 import yaml
 import minimalmodbus
+import paho.mqtt.client as mqtt
 import paho.mqtt.publish as publish
 from paho.mqtt.enums import MQTTProtocolVersion
 import time
