@@ -166,6 +166,7 @@ def perform_task():
         while not write_queue.empty():
             write_task = write_queue.get()
             if write_task['write_enable']:
+                logger.info("Executing write")
                 write_register(write_task['register'], write_task['value'])
 
         # Read and process seq registers
@@ -195,6 +196,7 @@ def on_message(client, userdata, msg):
         register = int(payload[0])
         value = int(payload[1])
         write_enable = payload[2].lower() == 'true'
+        logger.info("Got incoming write message for register:"+str(register)+", value:"+str(value)+", write:"+str(write_enable))
         write_queue.put({'register': register, 'value': value, 'write_enable': write_enable})
     except Exception as e:
         logger.error(f"Error processing incoming MQTT message: {e}")
@@ -203,7 +205,7 @@ def mqtt_listener():
     mqtt_broker = config['mqtt']['broker']
     mqtt_port = config['mqtt']['port']
     mqtt_topic = config['mqtt_write_topic']
-
+    logger.info("MQQT write listener starting")
     client = mqtt.Client()
     client.on_message = on_message
 
