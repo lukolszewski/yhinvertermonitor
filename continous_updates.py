@@ -160,8 +160,8 @@ def perform_task():
         setup_instrument()
 
         # Read and process seq registers
-        start_register = config['read_seq']['start_register']
-        number_of_registers = config['read_seq']['number_of_registers']
+        start_register = config['read']['start_register']
+        number_of_registers = config['read']['number_of_registers']
         
         msgs = []
         if number_of_registers is not None and number_of_registers > 0:
