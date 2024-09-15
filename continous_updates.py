@@ -165,11 +165,11 @@ def perform_task():
         
         msgs = []
         if number_of_registers is not None and number_of_registers > 0:
-            msgs.append(read_seq_registers(start_register,number_of_registers))
+            msgs.extend(read_seq_registers(start_register,number_of_registers))
 
         read_single=config.get('read_single',[])
         for rs in read_single:
-            msgs.append(read_register(rs))
+            msgs.extend(read_register(rs))
 
         # Publish all messages in one call
         print(msgs)
