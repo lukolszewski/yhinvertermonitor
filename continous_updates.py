@@ -12,6 +12,7 @@ import traceback
 # Initialize global variables and locks
 lock = threading.Lock()
 shutdown_event = threading.Event()
+instrument=None
 
 # Define the path to the config file
 config_file_path = 'config.yaml'
@@ -28,6 +29,13 @@ with open(config_file_path, 'r') as file:
 if config is None:
     print("Error: Configuration is empty or incorrectly formatted.")
     exit(1)  # Exit if the configuration is not loaded properly
+
+# Registers configuration
+registers = {reg['id']: reg for reg in config['registers']}
+# MQQT Config
+mqtt_prefix=config.get('mqtt_prefix','')
+if mqtt_prefix:
+    mqtt_prefix = mqtt_prefix+'/'
 
 def setup_logging():
     log_filename = config.get('logpath', 'app.log')
@@ -69,6 +77,79 @@ def swap_list_bytes(int_list):
 def divide(x, y):
     return x / y if y != 0 else 0
 
+def setup_instrument():
+    global instrument
+    device = config['serial']['device']
+    baudrate = config['serial']['baudrate']
+    timeout = config['serial']['timeout']
+    slave_id = config['serial']['slave_id']
+    mode = config['serial']['mode']
+    instrument = minimalmodbus.Instrument(device, slave_id, mode=mode)
+    instrument.serial.baudrate = baudrate
+    instrument.serial.timeout = timeout
+
+def read_seq_registers(start,number):
+    if instrument is None or start is None or number is None:
+        raise Exception("Bad arguments given to read_seq_registers")
+    values = instrument.read_registers(start, number)
+    values = swap_list_bytes(values)
+    # Collect all messages to publish
+    msgs = []
+    for register in range(start, start + number):
+        value = values[register - start]
+        reg_info = registers.get(register)
+        if reg_info:
+            transform_function = globals()[reg_info['transform']]
+            transformed_value = transform_function(value, reg_info['argument'])
+            rounded_value = round(transformed_value, reg_info['rounding'])
+            message = {
+                'topic': mqtt_prefix+reg_info['topic'],
+                'payload': f"{rounded_value}"
+            }
+            msgs.append(message)
+        elif config.get('push_unknown_registers','no') == 'yes':
+            transform_function = globals()[config.get('default_transform','divide')]
+            transformed_value = transform_function(value, config.get('default_argument',1))
+            rounded_value = round(transformed_value, config.get('default_rounding',0))
+            message = {
+                'topic': mqtt_prefix+"register"+str(register),
+                'payload': f"{rounded_value}"
+            }
+            msgs.append(message)
+    return msgs
+
+def read_register(number):
+    if instrument is None or number is None:
+        raise Exception("Bad arguments given to read_register")
+
+    value = instrument.read_register(number)
+    value = swap_list_bytes([value])[0]
+    reg_info = registers.get(number)
+    msgs = []
+    if reg_info:
+        transform_function = globals()[reg_info['transform']]
+        transformed_value = transform_function(value, reg_info['argument'])
+        rounded_value = round(transformed_value, reg_info['rounding'])
+        message = {
+            'topic': mqtt_prefix+reg_info['topic'],
+            'payload': f"{rounded_value}"
+        }
+        msgs.append(message)
+    elif config.get('push_unknown_registers','no') == 'yes':
+        transform_function = globals()[config.get('default_transform','divide')]
+        transformed_value = transform_function(value, config.get('default_argument',1))
+        rounded_value = round(transformed_value, config.get('default_rounding',0))
+        message = {
+            'topic': mqtt_prefix+"register"+str(number),
+            'payload': f"{rounded_value}"
+        }
+        msgs.append(message)
+    return msgs
+
+def write_register(number,value):
+    if instrument is None or number is None or value is None:
+        raise Exception("Bad arguments given to write_register")
+    instrument.write_register(number,value,0,6,False)
 
 def perform_task():
     try:
@@ -76,54 +157,19 @@ def perform_task():
         mqtt_broker = config['mqtt']['broker']
         mqtt_port = config['mqtt']['port']
 
-        # Serial configuration
-        device = config['serial']['device']
-        baudrate = config['serial']['baudrate']
-        timeout = config['serial']['timeout']
-        slave_id = config['serial']['slave_id']
-        mode = config['serial']['mode']
+        setup_instrument()
 
-        # Registers configuration
-        registers = {reg['id']: reg for reg in config['registers']}
-
-        # Setup the instrument
-        instrument = minimalmodbus.Instrument(device, slave_id, mode=mode)
-        instrument.serial.baudrate = baudrate
-        instrument.serial.timeout = timeout
-
-        # Read and process registers
-        start_register = config['read']['start_register']
-        number_of_registers = config['read']['number_of_registers']
-        values = instrument.read_registers(start_register, number_of_registers)
-        values = swap_list_bytes(values)
-
-        mqtt_prefix=config.get('mqtt_prefix','')
-        if mqtt_prefix:
-            mqtt_prefix = mqtt_prefix+'/'
-
-        # Collect all messages to publish
+        # Read and process seq registers
+        start_register = config['read_seq']['start_register']
+        number_of_registers = config['read_seq']['number_of_registers']
+        
         msgs = []
-        for register in range(start_register, start_register + number_of_registers):
-            value = values[register - start_register]
-            reg_info = registers.get(register)
-            if reg_info:
-                transform_function = globals()[reg_info['transform']]
-                transformed_value = transform_function(value, reg_info['argument'])
-                rounded_value = round(transformed_value, reg_info['rounding'])
-                message = {
-                    'topic': mqtt_prefix+reg_info['topic'],
-                    'payload': f"{rounded_value}"
-                }
-                msgs.append(message)
-            elif config.get('push_unknown_registers','no') == 'yes':
-                transform_function = globals()[config.get('default_transform','divide')]
-                transformed_value = transform_function(value, config.get('default_argument',1))
-                rounded_value = round(transformed_value, config.get('default_rounding',0))
-                message = {
-                    'topic': mqtt_prefix+"register"+str(register),
-                    'payload': f"{rounded_value}"
-                }
-                msgs.append(message)
+        if number_of_registers is not None and number_of_registers > 0:
+            msgs.append(read_seq_registers(start_register,number_of_registers))
+
+        read_single=config.get('read_single',[])
+        for rs in read_single:
+            msgs.append(read_register(rs))
 
         # Publish all messages in one call
         publish.multiple(msgs, hostname=mqtt_broker, port=mqtt_port, protocol=MQTTProtocolVersion.MQTTv5)
@@ -149,4 +195,3 @@ if __name__ == "__main__":
         logger.info("Shutting down...")
         shutdown_event.set()
         task_thread.join()
-

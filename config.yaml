@@ -56,7 +56,10 @@ registers:
   - {id: 4555, topic: 'charger_status', transform: 'divide', argument: 1, unit: 'status', rounding: 0}
   - {id: 4557, topic: 'temperature_sensor', transform: 'divide', argument: 1, unit: 'C', rounding: 1}
 
-read:
+read_seq:
   start_register: 4501
   number_of_registers: 59
 
+read_single:
+  - 5034
+  - 5035
