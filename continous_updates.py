@@ -6,6 +6,7 @@ import time
 import logging
 import logging.handlers
 import threading
+import queue
 import os
 import traceback
 
@@ -13,6 +14,7 @@ import traceback
 lock = threading.Lock()
 shutdown_event = threading.Event()
 instrument=None
+write_queue = queue.Queue()
 
 # Define the path to the config file
 config_file_path = 'config.yaml'
@@ -159,6 +161,12 @@ def perform_task():
 
         setup_instrument()
 
+        # Check the queue for any write operations
+        while not write_queue.empty():
+            write_task = write_queue.get()
+            if write_task['write_enable']:
+                write_register(write_task['register'], write_task['value'])
+
         # Read and process seq registers
         start_register = config['read']['start_register']
         number_of_registers = config['read']['number_of_registers']
@@ -180,6 +188,31 @@ def perform_task():
         logger.error("Exception occurred", exc_info=True)
         logger.error(traceback.format_exc())
 
+def on_message(client, userdata, msg):
+    try:
+        payload = msg.payload.decode('utf-8').split(',')
+        register = int(payload[0])
+        value = int(payload[1])
+        write_enable = payload[2].lower() == 'true'
+        write_queue.put({'register': register, 'value': value, 'write_enable': write_enable})
+    except Exception as e:
+        logger.error(f"Error processing incoming MQTT message: {e}")
+
+def mqtt_listener():
+    mqtt_broker = config['mqtt']['broker']
+    mqtt_port = config['mqtt']['port']
+    mqtt_topic = config['mqtt_write_topic']
+
+    client = mqtt.Client()
+    client.on_message = on_message
+
+    client.connect(mqtt_broker, mqtt_port, 60)
+    client.subscribe(mqtt_topic)
+
+    client.loop_start()
+    shutdown_event.wait()
+    client.loop_stop()
+
 def task_runner():
     while not shutdown_event.is_set():
         perform_task()
@@ -188,6 +221,10 @@ def task_runner():
 if __name__ == "__main__":
     task_thread = threading.Thread(target=task_runner)
     task_thread.start()
+    
+    if 'mqtt_write_topic' in config.keys():
+        mqtt_thread = threading.Thread(target=mqtt_listener)
+        mqtt_thread.start()
 
     try:
         while True:
@@ -196,3 +233,4 @@ if __name__ == "__main__":
         logger.info("Shutting down...")
         shutdown_event.set()
         task_thread.join()
+        mqtt_thread.join()
