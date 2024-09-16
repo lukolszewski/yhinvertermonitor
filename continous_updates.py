@@ -168,6 +168,7 @@ def perform_task():
             if write_task['write_enable']:
                 logger.info("Executing write")
                 write_register(write_task['register'], write_task['value'])
+                time.sleep(1)
 
         # Read and process seq registers
         start_register = config['read']['start_register']
@@ -182,7 +183,7 @@ def perform_task():
             msgs.extend(read_register(rs))
 
         # Publish all messages in one call
-        print(msgs)
+        #print(msgs)
         publish.multiple(msgs, hostname=mqtt_broker, port=mqtt_port, protocol=MQTTProtocolVersion.MQTTv5)
         logger.info("All messages published successfully.")
     except Exception as e:
