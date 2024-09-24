@@ -193,41 +193,20 @@ def perform_task():
 
 def on_message(client, userdata, msg):
     try:
-        topic_parts = msg.topic.split('/')
-        base_topic = '/'.join(topic_parts[:-1])
-        subtopic = topic_parts[-1]
-
-        # Check if the base topic matches the write topic and subtopic is numeric
-        if base_topic == config['mqtt_write_topic'] and subtopic.isdigit():
-            register = int(subtopic)
-            if 0 <= register <= 65536:  # Ensure the register is in the valid range
-                payload_value = msg.payload.decode('utf-8').strip()
-
-                if payload_value.isdigit():  # Ensure the payload is an integer
-                    value = int(payload_value)
-                    logger.info(f"Got incoming write message for register: {register}, value: {value}")
-                    write_queue.put({'register': register, 'value': value, 'write_enable': True})
-                else:
-                    logger.error(f"Invalid payload, not an integer: {payload_value}")
-            else:
-                logger.error(f"Register out of valid range: {register}")
-        else:
-            # Original payload processing for /sensor/write (non-subtopic)
-            payload = msg.payload.decode('utf-8').split(',')
-            register = int(payload[0])
-            value = int(payload[1])
-            write_enable = payload[2].lower() == 'true'
-            logger.info("Got incoming write message for register:" + str(register) + ", value:" + str(value) + ", write:" + str(write_enable))
-            write_queue.put({'register': register, 'value': value, 'write_enable': write_enable})
+        payload = msg.payload.decode('utf-8').split(',')
+        register = int(payload[0])
+        value = int(payload[1])
+        write_enable = payload[2].lower() == 'true'
+        logger.info("Got incoming write message for register:"+str(register)+", value:"+str(value)+", write:"+str(write_enable))
+        write_queue.put({'register': register, 'value': value, 'write_enable': write_enable})
     except Exception as e:
         logger.error(f"Error processing incoming MQTT message: {e}")
 
 def mqtt_listener():
     mqtt_broker = config['mqtt']['broker']
     mqtt_port = config['mqtt']['port']
-    mqtt_topic = config['mqtt_write_topic'] + "/#"
-    logger.info("MQTT write listener starting")
-    
+    mqtt_topic = config['mqtt_write_topic']
+    logger.info("MQQT write listener starting")
     client = mqtt.Client()
     client.on_message = on_message
 
@@ -237,7 +216,7 @@ def mqtt_listener():
     client.loop_start()
     shutdown_event.wait()
     client.loop_stop()
-    
+
 def task_runner():
     while not shutdown_event.is_set():
         perform_task()
