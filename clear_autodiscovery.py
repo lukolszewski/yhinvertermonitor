@@ -69,17 +69,19 @@ mqtt_prefix=config.get('mqtt_prefix','')
 if mqtt_prefix:
     mqtt_prefix = mqtt_prefix+'/'
 
-
 def clear_autodiscovery():
     try:
         if config.get('autodiscovery', {}).get('enabled', 'no') != 'yes':
             logger.info("Autodiscovery is disabled in the config.")
             return
 
-        # Device-specific information from the config
         device_info = config.get('autodiscovery', {}).get('device', {})
         device_identifier = device_info.get('identifiers', [])
-        device_identifier = [identifier.lower() for identifier in device_identifier]  # Ensure it's lowercase
+        device_identifier = [identifier.lower() for identifier in device_identifier]
+
+        if not device_identifier:
+            logger.error("Device identifier is missing in autodiscovery configuration.")
+            return
 
         discovery_prefix = config.get('mqqt_autodiscovery_prefix', None)
         if not discovery_prefix:
@@ -93,39 +95,49 @@ def clear_autodiscovery():
             logger.error("MQTT broker or port is not configured.")
             return
 
-        messages = []  # List to store all messages for clearing autodiscovery
+        messages = []
 
-        # Iterate over all registers
+        # Process registers
         for reg in config.get('registers', []):
-            # Skip if register has 'noautodiscovery' key
             if reg.get('noautodiscovery', False):
-                logger.info(f"Skipping clearing autodiscovery for register {reg['id']} due to 'noautodiscovery' flag.")
+                logger.info(f"Skipping clearing autodiscovery for register {reg.get('id', 'unknown')} due to 'noautodiscovery' flag.")
                 continue
 
             register_id = reg.get('id')
-            topic = reg.get('topic')
-
-            if not register_id or not topic:
-                logger.error(f"Register with missing 'id' or 'topic': {reg}")
-                continue  # Skip this register if mandatory fields are missing
-
-            object_id = f"register{register_id}"
-
-            # Autodiscovery topic format: {discovery_prefix}/sensor/{device_identifier[0]}/register{register_id}/config
             autodiscovery_topic = f"{discovery_prefix}/sensor/{device_identifier[0]}/register{register_id}/config"
-
-            # Prepare the message for MQTT with an empty payload, no retain flag
             message = {
                 "topic": autodiscovery_topic,
-                "payload": "",  # Empty payload to clear retained message
-                "retain": False,  # Do not retain the empty message, just clear the retained one
-                "qos": 1  # Ensure at least once delivery
+                "payload": "",
+                "retain": False,
+                "qos": 1
             }
-
-            # Append the message to the list
             messages.append(message)
 
-        # Publish all clear autodiscovery messages in one go
+        # Clear extra entities
+        extra_entities = config.get('autodiscovery', {}).get('extra', {})
+        if not isinstance(extra_entities, dict):
+            logger.error("Extra entities configuration is not a dictionary.")
+            return
+
+        for entity_category, entities in extra_entities.items():
+            if not isinstance(entities, list):
+                logger.error(f"Entities under category {entity_category} are not a list.")
+                continue
+
+            for entity in entities:
+                if entity.get('noautodiscovery', False):
+                    continue
+
+                entity_id = entity.get('id')
+                autodiscovery_topic = f"{discovery_prefix}/{entity_category}/{device_identifier[0]}/{entity_category}{entity_id}/config"
+                message = {
+                    "topic": autodiscovery_topic,
+                    "payload": "",
+                    "retain": False,
+                    "qos": 1
+                }
+                messages.append(message)
+
         if messages:
             publish.multiple(messages, hostname=mqtt_broker, port=mqtt_port, protocol=MQTTProtocolVersion.MQTTv5)
             logger.info(f"Cleared {len(messages)} retained autodiscovery messages.")

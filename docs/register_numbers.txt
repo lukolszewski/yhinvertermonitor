@@ -37,3 +37,10 @@
 5036 - led light on=1, off=0
 5037 - dual out, on=1, off=0
 5038 - dual output func.V in tenths of V
+
+
+
+
+5018,1,true
+5034,1,true
+5035,5,true

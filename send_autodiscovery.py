@@ -77,10 +77,13 @@ def send_autodiscovery():
             logger.info("Autodiscovery is disabled in the config.")
             return
 
-        # Device-specific information from the config
         device_info = config.get('autodiscovery', {}).get('device', {})
         device_identifier = device_info.get('identifiers', [])
-        device_identifier = [identifier.lower() for identifier in device_identifier]  # Ensure it's lowercase
+        device_identifier = [identifier.lower() for identifier in device_identifier]
+
+        if not device_identifier:
+            logger.error("Device identifier is missing in autodiscovery configuration.")
+            return
 
         discovery_prefix = config.get('mqqt_autodiscovery_prefix', None)
         if not discovery_prefix:
@@ -94,16 +97,14 @@ def send_autodiscovery():
             logger.error("MQTT broker or port is not configured.")
             return
 
-        messages = []  # List to store all autodiscovery messages
+        messages = []
 
-        # Define keys to ignore for registers only
         ignored_register_keys = {'id', 'topic', 'transform', 'argument', 'rounding', 'name', 'noautodiscovery'}
 
-        # Iterate over all registers
+        # Process registers
         for reg in config.get('registers', []):
-            # Skip if register has 'noautodiscovery' key
             if reg.get('noautodiscovery', False):
-                logger.info(f"Skipping autodiscovery for register {reg['id']} due to 'noautodiscovery' flag.")
+                logger.info(f"Skipping autodiscovery for register {reg.get('id', 'unknown')} due to 'noautodiscovery' flag.")
                 continue
 
             register_id = reg.get('id')
@@ -111,48 +112,67 @@ def send_autodiscovery():
 
             if not register_id or not topic:
                 logger.error(f"Register with missing 'id' or 'topic': {reg}")
-                continue  # Skip this register if mandatory fields are missing
+                continue
 
             object_id = f"register{register_id}"
-
-            # Set the name, use default if not present
             register_name = reg.get('name', f"Register {register_id}")
-
-            # Set up unique_id and state topic
             unique_id = f"{device_identifier[0]}_{topic}" if device_identifier else f"register_{register_id}"
             state_topic = f"{mqtt_prefix}{topic}"
 
-            # Build the discovery message payload
             message_payload = {
                 "name": register_name,
                 "state_topic": state_topic,
                 "unique_id": unique_id
             }
 
-            # Add device information if present
             if device_info:
                 message_payload["device"] = {key: value for key, value in device_info.items()}
 
-            # Add any extra keys from the register, ignoring the predefined ones
             for key, value in reg.items():
                 if key not in ignored_register_keys:
                     message_payload[key] = value
 
-            # Autodiscovery topic format: {discovery_prefix}/sensor/{device_identifier}/register{register_id}/config
             autodiscovery_topic = f"{discovery_prefix}/sensor/{device_identifier[0]}/register{register_id}/config"
-
-            # Prepare the message for MQTT with retain and QoS
             message = {
                 "topic": autodiscovery_topic,
-                "payload": json.dumps(message_payload),  # Use JSON format for Home Assistant
-                "retain": True,  # Retain the message so it is available to new subscribers
-                "qos": 1  # Ensure at least once delivery
+                "payload": json.dumps(message_payload),
+                "retain": True,
+                "qos": 1
             }
-
-            # Append the message to the list
             messages.append(message)
 
-        # Publish all autodiscovery messages in one go
+        # Process extra entities
+        extra_entities = config.get('autodiscovery', {}).get('extra', {})
+        if not isinstance(extra_entities, dict):
+            logger.error("Extra entities configuration is not a dictionary.")
+            return
+
+        for entity_category, entities in extra_entities.items():
+            if not isinstance(entities, list):
+                logger.error(f"Entities under category {entity_category} are not a list.")
+                continue
+
+            for entity in entities:
+                if entity.get('noautodiscovery', False):
+                    continue
+
+                entity_id = entity.get('id')
+                entity_payload = {k: v for k, v in entity.items() if k != 'id'}
+                unique_id = f"{device_identifier[0]}_{entity_category}{entity_id}" if entity_id else f"{entity_category}_{device_identifier[0]}"
+                entity_payload["unique_id"] = unique_id
+
+                if device_info:
+                    entity_payload["device"] = {key: value for key, value in device_info.items()}
+
+                autodiscovery_topic = f"{discovery_prefix}/{entity_category}/{device_identifier[0]}/{entity_category}{entity_id}/config"
+                message = {
+                    "topic": autodiscovery_topic,
+                    "payload": json.dumps(entity_payload),
+                    "retain": True,
+                    "qos": 1
+                }
+                messages.append(message)
+
         if messages:
             publish.multiple(messages, hostname=mqtt_broker, port=mqtt_port, protocol=MQTTProtocolVersion.MQTTv5)
             logger.info(f"Sent {len(messages)} autodiscovery messages with retain and QoS 1.")
@@ -161,6 +181,7 @@ def send_autodiscovery():
     except Exception as e:
         logger.error(f"Error during autodiscovery process: {e}")
         logger.error(traceback.format_exc())
+
 
 if __name__ == "__main__":
     send_autodiscovery()
