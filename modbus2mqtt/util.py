@@ -85,6 +85,7 @@ def write_register(number,value, instrument):
 def perform_task(config,device,write_queue):
     try:
         # MQTT configuration
+        logger.info("Task runner exec run start")
         mqtt_broker = config['mqtt']['broker']
         mqtt_port = config['mqtt']['port']
 
@@ -131,6 +132,7 @@ def perform_task(config,device,write_queue):
 
 def on_message(client, userdata, msg):
     try:
+        logger.info("Got MQTT message.")
         global write_queues
         global config
         topic = msg.topic
@@ -155,6 +157,7 @@ def on_message(client, userdata, msg):
         logger.error(f"Error processing incoming MQTT message: {e}")
 
 def mqtt_listener(config):
+    logger.info("MQTT listener thread starting")
     mqtt_broker = config['mqtt']['broker']
     mqtt_port = config['mqtt']['port']
 
@@ -175,8 +178,8 @@ def mqtt_listener(config):
     client.loop_stop()
 
 def task_runner():
+    logger.info("Task runner starting")
     while not shutdown_event.is_set():
         for index,device in enumerate(config['device']):
             perform_task(config, device, write_queues[index])
-
         time.sleep(1)
