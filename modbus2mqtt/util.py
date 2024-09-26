@@ -17,11 +17,12 @@ def setup_instrument(device,baudrate,timeout,slave_id,mode):
     instrument.serial.timeout = timeout
     return instrument
 
-def read_seq_registers(start,number,instrument,registers,config):
+def read_seq_registers(start,number,instrument,registers,config, swap = True):
     if instrument is None or start is None or number is None:
         raise Exception("Bad arguments given to read_seq_registers")
     values = instrument.read_registers(start, number)
-    values = swap_list_bytes(values)
+    if swap:
+        values = swap_list_bytes(values)
     # Collect all messages to publish
     msgs = []
     for register in range(start, start + number):
@@ -47,12 +48,13 @@ def read_seq_registers(start,number,instrument,registers,config):
             msgs.append(message)
     return msgs
 
-def read_register(number, instrument,registers,config):
+def read_register(number, instrument,registers,config,swap=True):
     if instrument is None or number is None:
         raise Exception("Bad arguments given to read_register")
 
     value = instrument.read_register(number)
-    value = swap_list_bytes([value])[0]
+    if swap:
+        value = swap_list_bytes([value])[0]
     reg_info = registers.get(number)
     msgs = []
     if reg_info:
@@ -105,14 +107,18 @@ def perform_task(config,device,write_queue):
         # Read and process seq registers
         start_register = device['read']['start_register']
         number_of_registers = device['read']['number_of_registers']
+        if device.get('swap_byteorder_on_receive','yes') == 'yes':
+            swap = True
+        else:
+            swap = False
         
         msgs = []
         if number_of_registers is not None and number_of_registers > 0:
-            msgs.extend(read_seq_registers(start_register, number_of_registers, instrument, registers, config))
+            msgs.extend(read_seq_registers(start_register, number_of_registers, instrument, registers, config, swap = swap))
 
         read_single=device.get('read_single',[])
         for rs in read_single:
-            msgs.extend(read_register(rs, instrument, registers, config))
+            msgs.extend(read_register(rs, instrument, registers, config, swap = swap))
 
         # Publish all messages in one call
         #print(msgs)
@@ -170,5 +176,7 @@ def mqtt_listener(config):
 
 def task_runner():
     while not shutdown_event.is_set():
-        perform_task()
+        for index,device in enumerate(config['device']):
+            perform_task(config, device, write_queues[index])
+
         time.sleep(1)
