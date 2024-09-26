@@ -16,6 +16,7 @@ import traceback
 lock = threading.Lock()
 shutdown_event = threading.Event()
 write_queues = []
+instrument= None
 
 # Define the path to the config file
 config_file_path = 'config.yaml'
@@ -42,7 +43,7 @@ def setup_logging():
 
     # Set up a logger
     logger = logging.getLogger(__name__)
-    logger.setLevel(logging.WARNING)
+    logger.setLevel(logging.DEBUG)
 
     # Create handlers
     c_handler = logging.StreamHandler()

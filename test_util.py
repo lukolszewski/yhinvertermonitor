@@ -95,7 +95,7 @@ class TestModbusUtil:
         val = 0x1234
 
         # Perform the read operation
-        msgs = read_register(reg, self.mock_instrument, registers, config, swap=swap)
+        msgs = read_register(reg, self.mock_instrument, registers, config, device['mqtt_prefix'], swap=swap)
 
         # Validate the generated messages
         assert isinstance(msgs, list)

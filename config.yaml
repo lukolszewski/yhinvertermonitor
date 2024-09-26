@@ -1,5 +1,5 @@
 mqtt:
-  broker: "192.168.1.128"
+  broker: "127.0.0.1"
   port: 1883
 logpath: ./logfile.log
 push_unknown_registers: 'yes'

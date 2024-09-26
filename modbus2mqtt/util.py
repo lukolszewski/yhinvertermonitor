@@ -17,9 +17,12 @@ def setup_instrument(device,baudrate,timeout,slave_id,mode):
     instrument.serial.timeout = timeout
     return instrument
 
-def read_seq_registers(start,number,instrument,registers,config, swap = True):
+def read_seq_registers(start,number,instrument,registers,config,mqtt_prefix, swap = True):
     if instrument is None or start is None or number is None:
         raise Exception("Bad arguments given to read_seq_registers")
+    if not mqtt_prefix.endswith('/'):
+        mqtt_prefix = mqtt_prefix + '/'
+
     values = instrument.read_registers(start, number)
     if swap:
         values = swap_list_bytes(values)
@@ -48,10 +51,12 @@ def read_seq_registers(start,number,instrument,registers,config, swap = True):
             msgs.append(message)
     return msgs
 
-def read_register(number, instrument,registers,config,swap=True):
+def read_register(number, instrument,registers,config,mqtt_prefix,swap=True):
     if instrument is None or number is None:
         raise Exception("Bad arguments given to read_register")
-
+    if not mqtt_prefix.endswith('/'):
+        mqtt_prefix = mqtt_prefix + '/'
+        
     value = instrument.read_register(number)
     if swap:
         value = swap_list_bytes([value])[0]
@@ -115,11 +120,11 @@ def perform_task(config,device,write_queue):
         
         msgs = []
         if number_of_registers is not None and number_of_registers > 0:
-            msgs.extend(read_seq_registers(start_register, number_of_registers, instrument, registers, config, swap = swap))
+            msgs.extend(read_seq_registers(start_register, number_of_registers, instrument, registers, config, device['mqtt_prefix'], swap = swap))
 
         read_single=device.get('read_single',[])
         for rs in read_single:
-            msgs.extend(read_register(rs, instrument, registers, config, swap = swap))
+            msgs.extend(read_register(rs, instrument, registers, config, device['mqtt_prefix'], swap = swap))
 
         # Publish all messages in one call
         #print(msgs)
