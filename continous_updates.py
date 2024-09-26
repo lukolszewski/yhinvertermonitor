@@ -1,6 +1,7 @@
 from modbus2mqtt import *
 from modbus2mqtt.autodiscovery import *
-from modbus2mqtt.utility import *
+from modbus2mqtt.util import *
+
 
 if __name__ == "__main__":
     task_thread = threading.Thread(target=task_runner)

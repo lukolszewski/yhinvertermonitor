@@ -90,7 +90,7 @@ def perform_task(config,device,write_queue):
 
         instrument = setup_instrument(config['serial']['device'],
                                         config['serial']['baudrate'],
-                                        config['serial']['timeout'],
+                                        device['timeout'],
                                         device['slave_id'],
                                         device['mode'])
         
@@ -101,7 +101,7 @@ def perform_task(config,device,write_queue):
             write_task = write_queue.get()
             if write_task['write_enable']:
                 logger.info("Executing write")
-                write_register(write_task['register'], write_task['value'])
+                write_register(write_task['register'], write_task['value'],instrument)
                 time.sleep(1)
 
         # Read and process seq registers

@@ -15,8 +15,6 @@ import traceback
 # Initialize global variables and locks
 lock = threading.Lock()
 shutdown_event = threading.Event()
-instrument=None
-write_queue = queue.Queue()
 write_queues = []
 
 # Define the path to the config file
