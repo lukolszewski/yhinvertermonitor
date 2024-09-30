@@ -1,0 +1,199 @@
+title: YH10K1
+path: inverter1
+cards:
+  - type: entities
+    title: YH10K1 Sensors
+    entities:
+      - entity: sensor.yh4k2_solar_inverter_output_source_priority
+      - entity: sensor.yh4k2_solar_inverter_ac_voltage
+      - entity: sensor.yh4k2_solar_inverter_ac_frequency
+      - entity: sensor.yh4k2_solar_inverter_pv_voltage
+      - entity: sensor.yh4k2_solar_inverter_charging
+      - entity: sensor.yh4k2_solar_inverter_battery_voltage
+      - entity: sensor.yh4k2_solar_inverter_battery_soc
+      - entity: sensor.yh4k2_solar_inverter_battery_charge_current
+      - entity: sensor.yh4k2_solar_inverter_battery_discharge_current
+      - entity: sensor.yh4k2_solar_inverter_load_voltage
+      - entity: sensor.yh4k2_solar_inverter_load_frequency
+      - entity: sensor.yh4k2_solar_inverter_load_power
+      - entity: sensor.yh4k2_solar_inverter_load_va
+      - entity: sensor.yh4k2_solar_inverter_load_percent
+      - entity: sensor.yh4k2_solar_inverter_register_4516
+      - entity: sensor.yh4k2_solar_inverter_error_code
+      - entity: sensor.yh4k2_solar_inverter_register_4535
+      - entity: sensor.yh4k2_solar_inverter_charger_source_priority
+      - entity: sensor.yh4k2_solar_inverter_ac_input_voltage_range
+      - entity: sensor.yh4k2_solar_inverter_target_output_frequency
+      - entity: sensor.yh4k2_solar_inverter_max_total_charging_current
+      - entity: sensor.yh4k2_solar_inverter_target_output_voltage
+      - entity: sensor.yh4k2_solar_inverter_max_utility_charging_current
+      - entity: sensor.yh4k2_solar_inverter_back_to_utility_source_voltage
+      - entity: sensor.yh4k2_solar_inverter_back_to_battery_source_voltage
+      - entity: sensor.yh4k2_solar_inverter_bulk_charging_voltage
+      - entity: sensor.yh4k2_solar_inverter_floating_charging_voltage
+      - entity: sensor.yh4k2_solar_inverter_low_cutoff_voltage
+      - entity: sensor.yh4k2_solar_inverter_battery_equalization_voltage
+      - entity: sensor.yh4k2_solar_inverter_battery_equalized_time
+      - entity: sensor.yh4k2_solar_inverter_battery_equalized_timeout
+      - entity: sensor.yh4k2_solar_inverter_equalization_interval
+      - entity: sensor.yh4k2_solar_inverter_register_4553
+      - entity: sensor.yh4k2_solar_inverter_register_4554
+      - entity: sensor.yh4k2_solar_inverter_charger_status
+      - entity: sensor.yh4k2_solar_inverter_temperature_sensor
+      - entity: sensor.yh4k2_solar_inverter_register_4517
+      - entity: sensor.yh4k2_solar_inverter_register_4518
+      - entity: sensor.yh4k2_solar_inverter_register_4519
+      - entity: sensor.yh4k2_solar_inverter_register_4520
+      - entity: sensor.yh4k2_solar_inverter_register_4521
+      - entity: sensor.yh4k2_solar_inverter_register_4522
+      - entity: sensor.yh4k2_solar_inverter_register_4523
+      - entity: sensor.yh4k2_solar_inverter_register_4524
+      - entity: sensor.yh4k2_solar_inverter_register_4525
+      - entity: sensor.yh4k2_solar_inverter_register_4526
+      - entity: sensor.yh4k2_solar_inverter_register_4527
+      - entity: sensor.yh4k2_solar_inverter_register_4528
+      - entity: sensor.yh4k2_solar_inverter_register_4529
+      - entity: sensor.yh4k2_solar_inverter_register_4531
+      - entity: sensor.yh4k2_solar_inverter_register_4532
+      - entity: sensor.yh4k2_solar_inverter_register_4533
+      - entity: sensor.yh4k2_solar_inverter_register_4534
+      - entity: sensor.yh4k2_solar_inverter_register_4539
+      - entity: sensor.yh4k2_solar_inverter_register_4546
+      - entity: sensor.yh4k2_solar_inverter_register_4547
+      - entity: sensor.yh4k2_solar_inverter_register_4548
+      - entity: sensor.yh4k2_solar_inverter_register_4549
+      - entity: sensor.yh4k2_solar_inverter_register_4550
+      - entity: sensor.yh4k2_solar_inverter_register_4551
+      - entity: sensor.yh4k2_solar_inverter_register_4552
+  - type: history-graph
+    title: YH10K1 Power
+    hours_to_show: 4
+    entities:
+      - entity: sensor.yh4k2_solar_inverter_charging
+        name: Charging Power
+      - entity: sensor.yh4k2_solar_inverter_load_power
+        name: Load Power
+  - type: history-graph
+    title: YH10K1 AC Voltages
+    hours_to_show: 4
+    entities:
+      - entity: sensor.yh4k2_solar_inverter_ac_voltage
+        name: AC In Voltage
+      - entity: sensor.yh4k2_solar_inverter_load_voltage
+        name: AC Load Voltage
+  - type: history-graph
+    title: YH10K1 AC Frequencies
+    hours_to_show: 4
+    entities:
+      - entity: sensor.yh4k2_solar_inverter_ac_frequency
+        name: AC in Frequency
+      - entity: sensor.yh4k2_solar_inverter_load_frequency
+        name: AC Load Frequency
+  - type: history-graph
+    title: YH10K1 PV Voltage
+    hours_to_show: 4
+    entities:
+      - entity: sensor.yh4k2_solar_inverter_pv_voltage
+        name: PV Voltage
+  - type: history-graph
+    title: YH10K1 Battery Voltage
+    hours_to_show: 4
+    entities:
+      - entity: sensor.yh4k2_solar_inverter_battery_voltage
+        name: Battery Voltage
+  - type: history-graph
+    title: YH10K1 Battery SOC
+    hours_to_show: 4
+    entities:
+      - entity: sensor.yh4k2_solar_inverter_battery_soc
+        name: Battery SOC
+  - type: history-graph
+    title: YH10K1 Battery Current
+    hours_to_show: 4
+    entities:
+      - entity: sensor.yh4k2_solar_inverter_battery_charge_current
+        name: Battery Charge Current
+      - entity: sensor.yh4k2_solar_inverter_battery_discharge_current
+        name: Battery Discharge Current
+  - type: history-graph
+    title: YH10K1 Load VA
+    hours_to_show: 4
+    entities:
+      - entity: sensor.yh4k2_solar_inverter_load_va
+        name: Load VA
+  - type: history-graph
+    title: YH10K1 Load Percent
+    hours_to_show: 4
+    entities:
+      - entity: sensor.yh4k2_solar_inverter_load_percent
+        name: Load Percent
+  - type: history-graph
+    title: YH10K1 Voltage Settings
+    hours_to_show: 4
+    entities:
+      - entity: sensor.yh4k2_solar_inverter_bulk_charging_voltage
+        name: Bulk Charging Voltage
+      - entity: sensor.yh4k2_solar_inverter_floating_charging_voltage
+        name: Floating Charging Voltage
+      - entity: sensor.yh4k2_solar_inverter_low_cutoff_voltage
+        name: Low Cutoff Voltage
+  - type: history-graph
+    title: YH10K1 Temperature Sensor
+    hours_to_show: 4
+    entities:
+      - entity: sensor.yh4k2_solar_inverter_temperature_sensor
+        name: Temperature Sensor
+  - type: history-graph
+    title: YH10K1 Extra Registers
+    hours_to_show: 4
+    entities:
+      - entity: sensor.yh4k2_solar_inverter_register_4517
+        name: Register 4517
+      - entity: sensor.yh4k2_solar_inverter_register_4518
+        name: Register 4518
+      - entity: sensor.yh4k2_solar_inverter_register_4519
+        name: Register 4519
+      - entity: sensor.yh4k2_solar_inverter_register_4520
+        name: Register 4520
+      - entity: sensor.yh4k2_solar_inverter_register_4521
+        name: Register 4521
+      - entity: sensor.yh4k2_solar_inverter_register_4522
+        name: Register 4522
+      - entity: sensor.yh4k2_solar_inverter_register_4523
+        name: Register 4523
+      - entity: sensor.yh4k2_solar_inverter_register_4524
+        name: Register 4524
+      - entity: sensor.yh4k2_solar_inverter_register_4525
+        name: Register 4525
+      - entity: sensor.yh4k2_solar_inverter_register_4526
+        name: Register 4526
+      - entity: sensor.yh4k2_solar_inverter_register_4527
+        name: Register 4527
+      - entity: sensor.yh4k2_solar_inverter_register_4528
+        name: Register 4528
+      - entity: sensor.yh4k2_solar_inverter_register_4529
+        name: Register 4529
+      - entity: sensor.yh4k2_solar_inverter_register_4531
+        name: Register 4531
+      - entity: sensor.yh4k2_solar_inverter_register_4532
+        name: Register 4532
+      - entity: sensor.yh4k2_solar_inverter_register_4533
+        name: Register 4533
+      - entity: sensor.yh4k2_solar_inverter_register_4534
+        name: Register 4534
+      - entity: sensor.yh4k2_solar_inverter_register_4539
+        name: Register 4539
+      - entity: sensor.yh4k2_solar_inverter_register_4546
+        name: Register 4546
+      - entity: sensor.yh4k2_solar_inverter_register_4547
+        name: Register 4547
+      - entity: sensor.yh4k2_solar_inverter_register_4548
+        name: Register 4548
+      - entity: sensor.yh4k2_solar_inverter_register_4549
+        name: Register 4549
+      - entity: sensor.yh4k2_solar_inverter_register_4550
+        name: Register 4550
+      - entity: sensor.yh4k2_solar_inverter_register_4551
+        name: Register 4551
+      - entity: sensor.yh4k2_solar_inverter_register_4552
+        name: Register 4552
