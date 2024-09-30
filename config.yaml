@@ -1,62 +1,96 @@
 mqtt:
-  broker: "127.0.0.1"
+  broker: "192.168.1.128"
   port: 1883
-
-logpath: /home/userone/dev/modbus/logfile.log
+logpath: ./logfile.log
 push_unknown_registers: 'yes'
 default_transform: 'divide'
 default_argument: 1
-default_unit: 'NA'
+default_unit_of_measurement: 'NA'
 default_rounding: 0
-mqtt_prefix: 'solar/yhinverter'
+mqqt_autodiscovery_prefix: 'homeassistant'
+autodiscovery:
+  enabled: 'yes'
+
 serial:
   device: "/dev/ttyAMA1"
   baudrate: 2400
-  timeout: 1
-  slave_id: 5
-  mode: "rtu"
 
-registers:
-  - {id: 4501, topic: 'output_source_priority', transform: 'divide', argument: 1, unit: 'index', rounding: 0}
-  - {id: 4502, topic: 'ac_voltage', transform: 'divide', argument: 10, unit: 'V', rounding: 1}
-  - {id: 4503, topic: 'ac_frequency', transform: 'divide', argument: 10, unit: 'Hz', rounding: 2}
-  - {id: 4504, topic: 'pv_voltage', transform: 'divide', argument: 10, unit: 'V', rounding: 2}
-  - {id: 4505, topic: 'charging', transform: 'divide', argument: 1, unit: '', rounding: 0}
-  - {id: 4506, topic: 'battery_voltage', transform: 'divide', argument: 10, unit: 'V', rounding: 2}
-  - {id: 4507, topic: 'battery_soc', transform: 'divide', argument: 1, unit: '%', rounding: 2}
-  - {id: 4508, topic: 'battery_charge_current', transform: 'divide', argument: 10, unit: 'A', rounding: 2}
-  - {id: 4509, topic: 'battery_discharge_current', transform: 'divide', argument: 10, unit: 'A', rounding: 2}
-  - {id: 4510, topic: 'load_voltage', transform: 'divide', argument: 10, unit: 'V', rounding: 2}
-  - {id: 4511, topic: 'load_frequency', transform: 'divide', argument: 10, unit: 'Hz', rounding: 2}
-  - {id: 4512, topic: 'load_power', transform: 'divide', argument: 10, unit: 'W', rounding: 0}
-  - {id: 4513, topic: 'load_va', transform: 'divide', argument: 10, unit: 'VA', rounding: 0}
-  - {id: 4514, topic: 'load_percent', transform: 'divide', argument: 1, unit: '%', rounding: 2}
-  - {id: 4515, topic: 'load_percent', transform: 'divide', argument: 1, unit: '%', rounding: 2}
-  - {id: 4516, topic: 'register4516', transform: 'divide', argument: 1, unit: '', rounding: 0}
-  - {id: 4530, topic: 'error_code', transform: 'divide', argument: 1, unit: '', rounding: 0}
-  - {id: 4535, topic: 'register4535', transform: 'divide', argument: 1, unit: '', rounding: 0}
-  - {id: 4536, topic: 'charger_source_priority', transform: 'divide', argument: 1, unit: '', rounding: 0}
-  - {id: 4537, topic: 'output_source_priority_correct', transform: 'divide', argument: 1, unit: '', rounding: 0}
-  - {id: 4538, topic: 'ac_input_voltage_range', transform: 'divide', argument: 1, unit: '', rounding: 0}
-  - {id: 4540, topic: 'target_output_frequency', transform: 'divide', argument: 10, unit: 'Hz', rounding: 2}
-  - {id: 4541, topic: 'max_total_charging_current', transform: 'divide', argument: 1, unit: 'A', rounding: 0}
-  - {id: 4542, topic: 'target_output_voltage', transform: 'divide', argument: 10, unit: 'V', rounding: 2}
-  - {id: 4543, topic: 'max_utility_charging_current', transform: 'divide', argument: 1, unit: 'A', rounding: 0}
-  - {id: 4544, topic: 'back_to_utility_source_voltage', transform: 'divide', argument: 10, unit: 'V', rounding: 2}
-  - {id: 4545, topic: 'back_to_battery_source_voltage', transform: 'divide', argument: 10, unit: 'V', rounding: 2}
-  - {id: 4546, topic: 'bulk_charging_voltage', transform: 'divide', argument: 10, unit: 'V', rounding: 2}
-  - {id: 4547, topic: 'floating_charging_voltage', transform: 'divide', argument: 10, unit: 'V', rounding: 2}
-  - {id: 4548, topic: 'low_cutoff_voltage', transform: 'divide', argument: 10, unit: 'V', rounding: 2}
-  - {id: 4549, topic: 'battery_equalization_voltage', transform: 'divide', argument: 10, unit: 'V', rounding: 2}
-  - {id: 4550, topic: 'battery_equalized_time', transform: 'divide', argument: 1, unit: 'minutes', rounding: 0}
-  - {id: 4551, topic: 'battery_equalized_timeout', transform: 'divide', argument: 1, unit: 'minutes', rounding: 0}
-  - {id: 4552, topic: 'equalization_interval', transform: 'divide', argument: 1, unit: 'days', rounding: 0}
-  - {id: 4553, topic: 'register4553', transform: 'divide', argument: 1, unit: '', rounding: 0}
-  - {id: 4554, topic: 'register4554', transform: 'divide', argument: 1, unit: '', rounding: 0}
-  - {id: 4555, topic: 'charger_status', transform: 'divide', argument: 1, unit: 'status', rounding: 0}
-  - {id: 4557, topic: 'temperature_sensor', transform: 'divide', argument: 1, unit: 'C', rounding: 1}
+device:
+  - slave_id: 5
+    mode: "rtu"
+    timeout: 1
+    swap_byteorder_on_receive: 'yes'
+    mqtt_prefix: 'solar/yhinverter'
+    mqtt_write_topic: 'write'
+    autodiscovery:
+      device:
+        identifiers: 
+        - 'YH4K2'
+        name: 'YH4K2 Solar Inverter'
+        model: 'YH 4K2'
+        manufacturer: 'YH'
+      extra:
+        number:
+          - {id: 1, name: 'Low Voltage Cutoff', command_topic: 'solar/yhinverter/write', command_template: '5029,{{ ((value*10) | round(0)) }},true', min: 40.0, max: 48.0, step: 0.1, mode: 'box', qos: 1, state_topic: 'solar/yhinverter/low_cutoff_voltage'}
+          - {id: 6, name: 'Floating Charging Voltage', command_topic: 'solar/yhinverter/write', command_template: '5028,{{ ((value*10) | round(0)) }},true', min: 48.0, max: 61.0, step: 0.1, mode: 'box', qos: 1, state_topic: 'solar/yhinverter/floating_charging_voltage'}
+          - {id: 7, name: 'Bulk Charging Voltage', command_topic: 'solar/yhinverter/write', command_template: '5027,{{ ((value*10) | round(0)) }},true', min: 48.0, max: 61.0, step: 0.1, mode: 'box', qos: 1, state_topic: 'solar/yhinverter/bulk_charging_voltage'}
+          - {id: 8, name: 'Max Battery Charging Current', command_topic: 'solar/yhinverter/write', command_template: '5022,{{ value }},true', min: 2.0, max: 160.0, step: 2, mode: 'box', qos: 1, state_topic: 'solar/yhinverter/max_total_charging_current'}
+          - {id: 9, name: 'Max Utility Charging Current', command_topic: 'solar/yhinverter/write', command_template: '5024,{{ value }},true', min: 2.0, max: 140.0, step: 2, mode: 'box', qos: 1, state_topic: 'solar/yhinverter/max_utility_charging_current'}
+          - {id: 10, name: 'Back to Utility Voltage', command_topic: 'solar/yhinverter/write', command_template: '5025,{{ ((value*10) | round(0)) }},true', min: 42.0, max: 51.0, step: 1, mode: 'box', qos: 1, state_topic: 'solar/yhinverter/back_to_utility_source_voltage'}
+          - {id: 11, name: 'Back to Battery Voltage', command_topic: 'solar/yhinverter/write', command_template: '5026,{{ ((value*10) | round(0)) }},true', min: 48.0, max: 58.0, step: 1, mode: 'box', qos: 1, state_topic: 'solar/yhinverter/back_to_battery_source_voltage'}
+        select:
+          - {id: 2, name: 'Output Source Priority', command_topic: 'solar/yhinverter/write', command_template: "5029,{{ ( 0 if value == 'USB' else 1 if value == 'SUB' else 2 if value == 'SBU' else 3 if value == 'MKS' else 'Unknown') }},true", options: ['USB','SUB','SBU','MKS'], value_template: "{{ 'USB' if value == '0.0' else 'SUB' if value == '1.0' else 'SBU' if value == '2.0' else 'MKS' if value == '3.0' else value }}", qos: 1, state_topic: 'solar/yhinverter/output_source_priority_correct'}
+          - {id: 3, name: 'Grid Export', command_topic: 'solar/yhinverter/write', command_template: "5034,{{ ( 0 if value == 'Disabled' else 1 if value == 'Enabled') }},true", options: ['Disabled','Enabled'], value_template: "{{ 'Enabled' if (value | int | bitwise_and(0x0800)) == 0 else 'Disabled' if (value | int | bitwise_and(0x0800)) != 0 else 'Unknown'}}", qos: 1, state_topic: 'solar/yhinverter/register5034'}
+          - {id: 4, name: 'Max Export Current', command_topic: 'solar/yhinverter/write', command_template: "5034,{{ ((value/2) | round(0)) }},true", options: [2,4,6,8,10,12,14,16,18,20,22,24,26,28,30], qos: 1}
+          - {id: 5, name: 'Charger Source Priority', command_topic: 'solar/yhinverter/write', command_template: "5017,{{ ( 0 if value == 'CSO' else 1 if value == 'SNU' else 2 if value == 'OSO' else 'Unknown') }},true", options: ['CSO','SNU','OSO'], value_template: "{{ 'CSO' if value == '0.0' else 'SNU' if value == '1.0' else 'OSO' if value == '2.0' else value }}", qos: 1, state_topic: 'solar/yhinverter/charger_source_priority'}
+    registers:
+      - {id: 4501, noautodiscovery: 1, topic: 'output_source_priority', transform: 'divide', argument: 1, rounding: 0, name: 'Output Source Priority Num'}
+      - {id: 4502, noautodiscovery: 1, topic: 'ac_voltage', transform: 'divide', argument: 10, unit_of_measurement: 'V', rounding: 1, name: 'AC Voltage'}
+      - {id: 4503, noautodiscovery: 1, topic: 'ac_frequency', transform: 'divide', argument: 10, unit_of_measurement: 'Hz', rounding: 2, name: 'AC Frequency'}
+      - {id: 4504, noautodiscovery: 1, topic: 'pv_voltage', transform: 'divide', argument: 10, unit_of_measurement: 'V', rounding: 2, name: 'PV Voltage'}
+      - {id: 4505, noautodiscovery: 1, topic: 'charging', transform: 'divide', argument: 1, rounding: 0, name: 'PV Power'}
+      - {id: 4506, noautodiscovery: 1, topic: 'battery_voltage', transform: 'divide', argument: 10, unit_of_measurement: 'V', rounding: 2, name: 'Battery Voltage'}
+      - {id: 4507, noautodiscovery: 1, topic: 'battery_soc', transform: 'divide', argument: 1, unit_of_measurement: '%', rounding: 2, name: 'Battery SOC'}
+      - {id: 4508, noautodiscovery: 1, topic: 'battery_charge_current', transform: 'divide', argument: 1, unit_of_measurement: 'A', rounding: 2, name: 'Battery Charge Current'}
+      - {id: 4509, noautodiscovery: 1, topic: 'battery_discharge_current', transform: 'divide', argument: 1, unit_of_measurement: 'A', rounding: 2, name: 'Battery Discharge Current'}
+      - {id: 4510, noautodiscovery: 1, topic: 'load_voltage', transform: 'divide', argument: 10, unit_of_measurement: 'V', rounding: 2, name: 'AC Out Voltage'}
+      - {id: 4511, noautodiscovery: 1, topic: 'load_frequency', transform: 'divide', argument: 10, unit_of_measurement: 'Hz', rounding: 2, name: 'AC Out Frequency'}
+      - {id: 4512, noautodiscovery: 1, topic: 'load_va', transform: 'divide', argument: 1, unit_of_measurement: 'W', rounding: 0, name: 'Load VA'}
+      - {id: 4513, noautodiscovery: 1, topic: 'load_power', transform: 'divide', argument: 1, unit_of_measurement: 'VA', rounding: 0, name: 'Load Power'}
+      - {id: 4514, noautodiscovery: 1, topic: 'load_percent', transform: 'divide', argument: 1, unit_of_measurement: '%', rounding: 2, name: 'Load Percent'}
+      - {id: 4515, noautodiscovery: 1, topic: 'load_percent2', transform: 'divide', argument: 1, unit_of_measurement: '%', rounding: 2, name: 'Load Percent'}
+      - {id: 4516, noautodiscovery: 1, topic: 'register4516', transform: 'divide', argument: 1, rounding: 0}
+      - {id: 4530, noautodiscovery: 1, topic: 'error_code', transform: 'divide', argument: 1, rounding: 0, name: 'Error Code'}
+      - {id: 4535, noautodiscovery: 1, topic: 'register4535', transform: 'divide', argument: 1, rounding: 0}
+      - {id: 4536, noautodiscovery: 1, topic: 'charger_source_priority', transform: 'divide', argument: 1, rounding: 0, name: 'Charger Source Priority'}
+      - {id: 4537, noautodiscovery: 1, topic: 'output_source_priority_correct', transform: 'divide', argument: 1, rounding: 0, name: 'Output Source Priority', value_template: "{{ 'USB' if value == '0.0' else 'SUB' if value == '1.0' else 'SBU' if value == '2.0' else 'MKS' if value == '3.0' else value }}"}
+      - {id: 4538, noautodiscovery: 1, topic: 'ac_input_voltage_range', transform: 'divide', argument: 1, rounding: 0, name: 'AC Input Voltage Range'}
+      - {id: 4540, noautodiscovery: 1, topic: 'target_output_frequency', transform: 'divide', argument: 10, unit_of_measurement: 'Hz', rounding: 2, name: 'AC Output Target Frequency'}
+      - {id: 4541, noautodiscovery: 1, topic: 'max_total_charging_current', transform: 'divide', argument: 1, unit_of_measurement: 'A', rounding: 0, name: 'Max Charging Current'}
+      - {id: 4542, noautodiscovery: 1, topic: 'target_output_voltage', transform: 'divide', argument: 10, unit_of_measurement: 'V', rounding: 2, name: 'AC Output Target Voltage'}
+      - {id: 4543, noautodiscovery: 1, topic: 'max_utility_charging_current', transform: 'divide', argument: 1, unit_of_measurement: 'A', rounding: 0, name: 'Max AC Charging Current'}
+      - {id: 4544, noautodiscovery: 1, topic: 'back_to_utility_source_voltage', transform: 'divide', argument: 10, unit_of_measurement: 'V', rounding: 2, name: 'Back to Utility Battery Voltage'}
+      - {id: 4545, noautodiscovery: 1, topic: 'back_to_battery_source_voltage', transform: 'divide', argument: 10, unit_of_measurement: 'V', rounding: 2, name: 'Back to Battery Battery Voltage'}
+      - {id: 4546, noautodiscovery: 1, topic: 'bulk_charging_voltage', transform: 'divide', argument: 10, unit_of_measurement: 'V', rounding: 2, name: 'Bulk Charging Voltage'}
+      - {id: 4547, noautodiscovery: 1, topic: 'floating_charging_voltage', transform: 'divide', argument: 10, unit_of_measurement: 'V', rounding: 2, name: 'Floating Charging Voltage'}
+      - {id: 4548, noautodiscovery: 1, topic: 'low_cutoff_voltage', transform: 'divide', argument: 10, unit_of_measurement: 'V', rounding: 2, name: 'Battery Low Voltage Cutoff'}
+      - {id: 4549, noautodiscovery: 1, topic: 'battery_equalization_voltage', transform: 'divide', argument: 10, unit_of_measurement: 'V', rounding: 2, name: 'Battery Equalization Voltage'}
+      - {id: 4550, noautodiscovery: 1, topic: 'battery_equalized_time', transform: 'divide', argument: 1, unit_of_measurement: 'min', rounding: 0, name: 'Battery Equalize Time'}
+      - {id: 4551, noautodiscovery: 1, topic: 'battery_equalized_timeout', transform: 'divide', argument: 1, unit_of_measurement: 'min', rounding: 0, name: 'Battery Equalize Timeout'}
+      - {id: 4552, noautodiscovery: 1, topic: 'equalization_interval', transform: 'divide', argument: 1, unit_of_measurement: 'd', rounding: 0, name: 'Battery Equalize Time Interval'}
+      - {id: 4553, noautodiscovery: 1, topic: 'register4553', transform: 'divide', argument: 1, rounding: 0}
+      - {id: 4554, noautodiscovery: 1, topic: 'register4554', transform: 'divide', argument: 1, rounding: 0}
+      - {id: 4555, noautodiscovery: 1, topic: 'charger_status', transform: 'divide', argument: 1, rounding: 0}
+      - {id: 4557, noautodiscovery: 1, topic: 'temperature_sensor', transform: 'divide', argument: 1, unit_of_measurement: '°C', rounding: 1, name: 'Radiator Temperature'}
+      - {id: 5034, noautodiscovery: 1, topic: 'register5034', transform: 'divide', argument: 1, rounding: 0}
+      - {id: 5035, noautodiscovery: 1, topic: 'register5035', transform: 'divide', argument: 1, rounding: 0}
+    read:
+      start_register: 4501
+      number_of_registers: 59
+    read_single:
+      - 5034
+      - 5035
 
-read:
-  start_register: 4501
-  number_of_registers: 59
+
+
 

@@ -1,0 +1,46 @@
+6030 - 6 bytes year/month/day hour/minute/second
+5001 - clear historical power by writing 1
+5002 - buzzer alarm enabled=1, disabled=0
+5003 - power save mode on=1,off=0
+5004 - LCD backlight, on=1,off=0
+5005 - overload auto restart on=1, off=0
+5006 - over temp auto restart, on=1, off=0
+5007 - beep when main source down enabled=1, disabled=0
+5008 - return to main LCD page on=1,off=0
+
+5010 - record fault on=1,off=0
+5011 - batt.eq. enable=1,disable=0
+5012 - batt.eq activate now yes=1, no=0
+
+
+
+5016 - restore defaults on=1,off=0
+5017 - charger priority cso=0,snu=1,oso=2
+5018 - output priority, usb=0,sub=1,sbu=2,mks=3
+5019 - set/get Ac input range appliance=0, UPS=1
+5020 - batt type, agm=0,flooded=1,user=2,LIB=3
+5021 - output frequency 50hz=-,60hz=1
+5022 - max charge current
+5023 - output voltage in volts
+5024 - max utility charge current 
+5025 - back to utility V
+5026 - back to battery V
+5027 - bulk charge V
+5028 - float V
+5029 - low V cutoff
+5030 - batt .eq.V
+5031 - batt .eq time (in min)
+5032 - batt .eq timeout (min)
+5033 - batt .eq interval (days)
+5034 - grid tie, on=1, off=0
+5035 - grid tie current, A/2
+5036 - led light on=1, off=0
+5037 - dual out, on=1, off=0
+5038 - dual output func.V in tenths of V
+
+
+
+
+5018,1,true
+5034,1,true
+5035,5,true
