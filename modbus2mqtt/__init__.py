@@ -43,7 +43,7 @@ def setup_logging():
 
     # Set up a logger
     logger = logging.getLogger(__name__)
-    logger.setLevel(logging.DEBUG)
+    logger.setLevel(logging.WARNING)
 
     # Create handlers
     c_handler = logging.StreamHandler()

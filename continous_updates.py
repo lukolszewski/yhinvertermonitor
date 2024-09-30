@@ -13,8 +13,9 @@ if __name__ == "__main__":
     task_thread = threading.Thread(target=task_runner)
     task_thread.start()
     
-    if 'mqtt_write_topic' in config.keys():
-        mqtt_thread = threading.Thread(target=mqtt_listener)
+    if 'mqtt_write_enable' in config.keys():
+        logger.info("MQTT write enabled, starting thread.")
+        mqtt_thread = threading.Thread(target=mqtt_listener, args=(config,))
         mqtt_thread.start()
 
     try:

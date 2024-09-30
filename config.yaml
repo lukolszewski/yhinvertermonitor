@@ -1,13 +1,14 @@
 mqtt:
-  broker: "192.168.1.128"
+  broker: "127.0.0.1"
   port: 1883
-logpath: ./logfile.log
+logpath: /home/userone/dev/modbus/logfile.log
 push_unknown_registers: 'yes'
 default_transform: 'divide'
 default_argument: 1
 default_unit_of_measurement: 'NA'
 default_rounding: 0
 mqqt_autodiscovery_prefix: 'homeassistant'
+mqtt_write_enable: 'yes'
 autodiscovery:
   enabled: 'yes'
 
